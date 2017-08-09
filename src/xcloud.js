@@ -10,23 +10,20 @@ module.exports = function(words, options) {
         center: { x: 0.5, y: 0.5 },
         steps: 10,
         shape: 'elliptic',
-        classPattern: 'w{n}',
-        encodeURI: true,
         removeOverflowing: true,
-        afterCloudRender: null,
         colors: null,
         fontSize: null,
         template: null
     };
 
     let data = {
-        placed_words: [],
+        outputWords: [],
         timeouts: {},
         step: null,
         angle: null,
-        aspect_ratio: null,
-        max_weight: null,
-        min_weight: null,
+        aspectRatio: null,
+        maxWeight: null,
+        minWeight: null,
         sizes: [],
         colors: []
     };
@@ -34,7 +31,7 @@ module.exports = function(words, options) {
     initialize();
     drawWordCloud();
 
-    return data.placed_words;
+    return data.outputWords;
 
     function initialize() {
         if(!options.measureText || options.measureText.constructor !== Function) {
@@ -104,7 +101,7 @@ module.exports = function(words, options) {
 
         data.angle = Math.random() * 6.28;
         data.step = (options.shape === 'rectangular') ? 18.0 : 2.0;
-        data.aspect_ratio = options.width / options.height;
+        data.aspectRatio = options.width / options.height;
     }
 
     // Pairwise overlap detection
@@ -120,8 +117,8 @@ module.exports = function(words, options) {
     // Helper function to test if an element overlaps others
     function hitTest(elem) {
         // Check elements for overlap one by one, stop and return false as soon as an overlap is found
-        for (var i = 0, l = data.placed_words.length; i < l; i++) {
-            if (overlapping(elem, data.placed_words[i])) {
+        for (var i = 0, l = data.outputWords.length; i < l; i++) {
+            if (overlapping(elem, data.outputWords[i])) {
                 return true;
             }
         }
@@ -147,8 +144,8 @@ module.exports = function(words, options) {
         });
 
         // Kepp trace of bounds
-        data.max_weight = words[0].weight;
-        data.min_weight = words[words.length - 1].weight;
+        data.maxWeight = words[0].weight;
+        data.minWeight = words[words.length - 1].weight;
 
         // Generate colors
         data.colors = [];
@@ -169,10 +166,6 @@ module.exports = function(words, options) {
         for (i = 0, l = words.length; i < l; i++) {
             drawOneWord(i, words[i]);
         }
-
-        if (typeof options.afterCloudRender === 'function') {
-            options.afterCloudRender();
-        }
     }
 
     // Function to draw a word, by moving it in spiral until it finds a suitable empty place
@@ -192,8 +185,8 @@ module.exports = function(words, options) {
 
         // Linearly map the original weight to a discrete scale from 1 to 10
         // Only if weights are different
-        if (data.max_weight != data.min_weight) {
-            weight = Math.round((word.weight - data.min_weight) * 1.0 * (options.steps - 1) / (data.max_weight - data.min_weight)) + 1;
+        if (data.maxWeight != data.minWeight) {
+            weight = Math.round((word.weight - data.minWeight) * 1.0 * (options.steps - 1) / (data.maxWeight - data.minWeight)) + 1;
         }
 
         outputWord.weight = weight;
@@ -223,20 +216,20 @@ module.exports = function(words, options) {
             if (options.shape === 'rectangular') {
                 steps_in_direction++;
 
-                if (steps_in_direction * data.step > (1 + Math.floor(quarter_turns / 2.0)) * data.step * ((quarter_turns % 4 % 2) === 0 ? 1 : data.aspect_ratio)) {
+                if (steps_in_direction * data.step > (1 + Math.floor(quarter_turns / 2.0)) * data.step * ((quarter_turns % 4 % 2) === 0 ? 1 : data.aspectRatio)) {
                     steps_in_direction = 0.0;
                     quarter_turns++;
                 }
 
                 switch (quarter_turns % 4) {
                     case 1:
-                        outputWord.left += data.step * data.aspect_ratio + Math.random() * 2.0;
+                        outputWord.left += data.step * data.aspectRatio + Math.random() * 2.0;
                         break;
                     case 2:
                         outputWord.top -= data.step + Math.random() * 2.0;
                         break;
                     case 3:
-                        outputWord.left -= data.step * data.aspect_ratio + Math.random() * 2.0;
+                        outputWord.left -= data.step * data.aspectRatio + Math.random() * 2.0;
                         break;
                     case 0:
                         outputWord.top += data.step + Math.random() * 2.0;
@@ -248,7 +241,7 @@ module.exports = function(words, options) {
                 radius += data.step;
                 angle += (index % 2 === 0 ? 1 : -1) * data.step;
 
-                outputWord.left = options.center.x * options.width - (outputWord.width / 2.0) + (radius * Math.cos(angle)) * data.aspect_ratio;
+                outputWord.left = options.center.x * options.width - (outputWord.width / 2.0) + (radius * Math.cos(angle)) * data.aspectRatio;
                 outputWord.top = options.center.y * options.height + radius * Math.sin(angle) - (outputWord.height / 2.0);
             }
         }
@@ -264,7 +257,7 @@ module.exports = function(words, options) {
         }
 
         // Save position for further usage
-        data.placed_words.push(outputWord);
+        data.outputWords.push(outputWord);
     }
 };
 
