@@ -17,5 +17,9 @@
     "url": "https://github.com/danderson00/xcloud/issues"
   },
   "scripts": {
+    "test": "jest"
+  },
+  "devDependencies": {
+    "jest": "^20.0.4"
   }
 }

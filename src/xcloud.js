@@ -180,7 +180,7 @@ module.exports = function(words, options) {
 
             weight = Math.floor(options.steps / 2),
 
-            outputWord,
+            outputWord = {},
             dimensions;
 
         // Linearly map the original weight to a discrete scale from 1 to 10
