@@ -3,6 +3,7 @@
   "version": "0.0.1",
   "homepage": "https://github.com/danderson00/xcloud",
   "description": "Generate word clouds on any platform",
+  "main": "./src/index",
   "keywords": [
     "word",
     "cloud",

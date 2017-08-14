@@ -5,15 +5,16 @@ module.exports = function(words, options) {
     let colorGenerator = null;
 
     const defaults = {
-        width: 100,
-        height: 100,
+        width: 320,
+        height: 180,
         center: { x: 0.5, y: 0.5 },
         steps: 10,
         shape: 'elliptic',
         removeOverflowing: true,
         colors: null,
-        fontSize: null,
-        template: null
+        fontSize: { from: 0.05, to: 0.15 },
+        template: null,
+        font: 'Arial'
     };
 
     let data = {
@@ -75,7 +76,7 @@ module.exports = function(words, options) {
             sizeGenerator = options.fontSize;
         }
         // Object with 'from' and 'to'
-        else if (isPlainObject(options.fontSize)) {
+        else if (typeof options.fontSize === 'object') {
             sizeGenerator = function(width, height, weight) {
                 var max = width * options.fontSize.from,
                     min = width * options.fontSize.to;
@@ -102,27 +103,6 @@ module.exports = function(words, options) {
         data.angle = Math.random() * 6.28;
         data.step = (options.shape === 'rectangular') ? 18.0 : 2.0;
         data.aspectRatio = options.width / options.height;
-    }
-
-    // Pairwise overlap detection
-    function overlapping(a, b) {
-        if (Math.abs(2.0 * a.left + a.width - 2.0 * b.left - b.width) < a.width + b.width) {
-            if (Math.abs(2.0 * a.top + a.height - 2.0 * b.top - b.height) < a.height + b.height) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    // Helper function to test if an element overlaps others
-    function hitTest(elem) {
-        // Check elements for overlap one by one, stop and return false as soon as an overlap is found
-        for (var i = 0, l = data.outputWords.length; i < l; i++) {
-            if (overlapping(elem, data.outputWords[i])) {
-                return true;
-            }
-        }
-        return false;
     }
 
     // Initialize the drawing of the whole cloud
@@ -203,13 +183,15 @@ module.exports = function(words, options) {
 
         outputWord.text = word.text;
 
-        var dimensions = options.measureText(word.text)
+        var dimensions = options.measureText(word.text, options.font, outputWord.size)
 
         outputWord.width = dimensions.width;
         outputWord.height = dimensions.height;
 
         outputWord.left = options.center.x * options.width - dimensions.width / 2.0;
         outputWord.top = options.center.y * options.height - dimensions.height / 2.0;
+
+        outputWord.font = options.font;
 
         while (hitTest(outputWord)) {
             // option shape is 'rectangular' so move the word in a rectangular spiral
@@ -259,12 +241,29 @@ module.exports = function(words, options) {
         // Save position for further usage
         data.outputWords.push(outputWord);
     }
-};
+
+    // Pairwise overlap detection
+    function overlapping(a, b) {
+        if (Math.abs(2.0 * a.left + a.width - 2.0 * b.left - b.width) < a.width + b.width) {
+            if (Math.abs(2.0 * a.top + a.height - 2.0 * b.top - b.height) < a.height + b.height) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    // Helper function to test if an element overlaps others
+    function hitTest(elem) {
+        // Check elements for overlap one by one, stop and return false as soon as an overlap is found
+        for (var i = 0, l = data.outputWords.length; i < l; i++) {
+            if (overlapping(elem, data.outputWords[i])) {
+                return true;
+            }
+        }
+        return false;
+    }
+}
 
 function isArray(target) {
     return target && target.constructor === Array;
-}
-
-function isPlainObject(target) {
-    return typeof target === 'object';
 }

@@ -1,1 +1,0 @@
-- Default fontSize: { from: x, to: y }
