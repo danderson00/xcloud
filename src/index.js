@@ -1,3 +1,6 @@
+var fontSizes = require('./fontSizes')
+var colors = require('./colors')
+
 module.exports = function(words, options) {
     words = words || [];
 
@@ -5,14 +8,14 @@ module.exports = function(words, options) {
     let colorGenerator;
 
     const defaults = {
-        width: 320,
-        height: 180,
+        width: 640,
+        height: 480,
         center: { x: 0.5, y: 0.5 },
         steps: 10,
         shape: 'elliptic',
         removeOverflowing: true,
-        colors: null,
-        fontSize: { from: 0.05, to: 0.10 },
+        colors: { r: 34, g: 85, b: 153 },
+        fontSize: { from: 0.03, to: 0.07 },
         template: null,
         font: 'Arial'
     };
@@ -42,52 +45,8 @@ module.exports = function(words, options) {
         // Default options value
         options = Object.assign({}, defaults, options);
 
-        // Create colorGenerator function from options
-        if (typeof options.colors == 'function') {
-            colorGenerator = options.colors;
-        }
-        else if (isArray(options.colors)) {
-            var cl = options.colors.length;
-            if (cl > 0) {
-                // Fill the sizes array to X items
-                if (cl < options.steps) {
-                    for (var i = cl; i < options.steps; i++) {
-                        options.colors[i] = options.colors[cl - 1];
-                    }
-                }
-
-                colorGenerator = function(weight) {
-                    return options.colors[options.steps - weight];
-                };
-            }
-        }
-
-        // Create sizeGenerator function from options
-        if (typeof options.fontSize == 'function') {
-            sizeGenerator = options.fontSize;
-        }
-        else if (typeof options.fontSize === 'object') {
-            sizeGenerator = function(width, height, weight) {
-                var max = width * options.fontSize.from,
-                    min = width * options.fontSize.to;
-                return Math.round(min + (max - min) * 1.0 / (options.steps - 1) * (weight - 1)) + 'px';
-            };
-        }
-        else if (isArray(options.fontSize)) {
-            var sl = options.fontSize.length;
-            if (sl > 0) {
-                // Fill the sizes array to X items
-                if (sl < options.steps) {
-                    for (var j = sl; j < options.steps; j++) {
-                        options.fontSize[j] = options.fontSize[sl - 1];
-                    }
-                }
-
-                sizeGenerator = function(width, height, weight) {
-                    return options.fontSize[options.steps - weight];
-                };
-            }
-        }
+        colorGenerator = colors.createGenerator(options.colors, options.steps)
+        sizeGenerator = fontSizes.createGenerator(options.fontSize, options.steps)
 
         data.angle = Math.random() * 6.28;
         data.step = (options.shape === 'rectangular') ? 18.0 : 2.0;
@@ -106,11 +65,9 @@ module.exports = function(words, options) {
         data.minWeight = words[words.length - 1].weight;
 
         // Generate colors and font sizes
-        if (colorGenerator) {
-            for (var i = 0; i < options.steps; i++) {
-                data.colors.push(colorGenerator(i + 1));
-                data.sizes.push(sizeGenerator(options.width, options.height, i + 1));
-            }
+        for (var i = 1; i <= options.steps; i++) {
+            data.colors.push(colorGenerator(i));
+            data.sizes.push(sizeGenerator(options.width, options.height, i));
         }
 
         words.forEach((word, index) => drawOneWord(index, word))
@@ -131,10 +88,7 @@ module.exports = function(words, options) {
             outputWord = {},
             dimensions;
 
-        // Linearly map the original weight to a discrete scale from 1 to 10, only if weights are different
-        if (data.maxWeight != data.minWeight) {
-            weight = Math.round((word.weight - data.minWeight) * 1.0 * (options.steps - 1) / (data.maxWeight - data.minWeight)) + 1;
-        }
+        weight = fontSizes.mapWeightToScale(word.weight, data.minWeight, data.maxWeight, options.steps)
 
         if (data.colors.length) {
             outputWord.color = data.colors[weight - 1];
