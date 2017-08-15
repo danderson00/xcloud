@@ -169,8 +169,6 @@ module.exports = function(words, options) {
             weight = Math.round((word.weight - data.minWeight) * 1.0 * (options.steps - 1) / (data.maxWeight - data.minWeight)) + 1;
         }
 
-        outputWord.weight = weight;
-
         // Apply color
         if (data.colors.length) {
             outputWord.color = data.colors[weight - 1];
@@ -181,17 +179,17 @@ module.exports = function(words, options) {
             outputWord.size = data.sizes[weight - 1];
         }
 
+        outputWord.weight = weight;
         outputWord.text = word.text;
-
+        outputWord.font = options.font;
+        
         var dimensions = options.measureText(word.text, options.font, outputWord.size)
 
         outputWord.width = dimensions.width;
         outputWord.height = dimensions.height;
-
         outputWord.left = options.center.x * options.width - dimensions.width / 2.0;
         outputWord.top = options.center.y * options.height - dimensions.height / 2.0;
 
-        outputWord.font = options.font;
 
         while (hitTest(outputWord)) {
             // option shape is 'rectangular' so move the word in a rectangular spiral
@@ -228,39 +226,30 @@ module.exports = function(words, options) {
             }
         }
 
-        // Don't render word if part of it would be outside the container
-        if (options.removeOverflowing && (
-                outputWord.left < 0 || outputWord.top < 0 ||
-                (outputWord.left + outputWord.width) > options.width ||
-                (outputWord.top + outputWord.height) > options.height
-            )
-        ) {
+        if (options.removeOverflowing && outsideContainer(outputWord)) {
             return;
         }
 
-        // Save position for further usage
         data.outputWords.push(outputWord);
     }
 
     // Pairwise overlap detection
     function overlapping(a, b) {
-        if (Math.abs(2.0 * a.left + a.width - 2.0 * b.left - b.width) < a.width + b.width) {
-            if (Math.abs(2.0 * a.top + a.height - 2.0 * b.top - b.height) < a.height + b.height) {
-                return true;
-            }
-        }
-        return false;
+        return (Math.abs(2.0 * a.left + a.width - 2.0 * b.left - b.width) < a.width + b.width) ||
+            (Math.abs(2.0 * a.top + a.height - 2.0 * b.top - b.height) < a.height + b.height);
     }
 
     // Helper function to test if an element overlaps others
     function hitTest(elem) {
-        // Check elements for overlap one by one, stop and return false as soon as an overlap is found
-        for (var i = 0, l = data.outputWords.length; i < l; i++) {
-            if (overlapping(elem, data.outputWords[i])) {
-                return true;
-            }
-        }
-        return false;
+        return data.outputWords.some(word => overlapping(elem, word))
+    }
+
+    function outsideContainer(word) {
+        return (
+            word.left < 0 || word.top < 0 ||
+            (word.left + word.width) > options.width ||
+            (word.top + word.height) > options.height
+        )
     }
 }
 

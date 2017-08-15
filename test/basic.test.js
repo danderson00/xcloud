@@ -1,4 +1,4 @@
-let cloud = require('../src/xcloud')
+let cloud = require('../src')
 
 test("produces output", () => {
   const words = [
