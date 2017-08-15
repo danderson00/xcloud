@@ -1,5 +1,6 @@
-var fontSizes = require('./fontSizes')
-var colors = require('./colors')
+const fontSizes = require('./fontSizes')
+const colors = require('./colors')
+const bounds = require('./bounds')
 
 module.exports = function(words, options) {
     words = words || [];
@@ -109,7 +110,7 @@ module.exports = function(words, options) {
         outputWord.left = options.center.x * options.width - dimensions.width / 2.0;
         outputWord.top = options.center.y * options.height - dimensions.height / 2.0;
 
-        while (hitTest(outputWord)) {
+        while (bounds.hitTest(outputWord, data.outputWords)) {
             // option shape is 'rectangular' so move the word in a rectangular spiral
             if (options.shape === 'rectangular') {
                 steps_in_direction++;
@@ -144,31 +145,10 @@ module.exports = function(words, options) {
             }
         }
 
-        if (options.removeOverflowing && outsideContainer(outputWord)) {
+        if (options.removeOverflowing && bounds.outsideContainer(outputWord, options.width, options.height)) {
             return;
         }
 
         data.outputWords.push(outputWord);
     }
-
-    function overlapping(a, b) {
-        return (Math.abs(2.0 * a.left + a.width - 2.0 * b.left - b.width) < a.width + b.width) ||
-            (Math.abs(2.0 * a.top + a.height - 2.0 * b.top - b.height) < a.height + b.height);
-    }
-
-    function hitTest(newWord) {
-        return data.outputWords.some(word => overlapping(newWord, word))
-    }
-
-    function outsideContainer(word) {
-        return (
-            word.left < 0 || word.top < 0 ||
-            (word.left + word.width) > options.width ||
-            (word.top + word.height) > options.height
-        )
-    }
-}
-
-function isArray(target) {
-    return target && target.constructor === Array;
 }
