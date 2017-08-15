@@ -1,8 +1,8 @@
 module.exports = function(words, options) {
     words = words || [];
 
-    let sizeGenerator = null;
-    let colorGenerator = null;
+    let sizeGenerator;
+    let colorGenerator;
 
     const defaults = {
         width: 320,
@@ -12,7 +12,7 @@ module.exports = function(words, options) {
         shape: 'elliptic',
         removeOverflowing: true,
         colors: null,
-        fontSize: { from: 0.05, to: 0.15 },
+        fontSize: { from: 0.05, to: 0.10 },
         template: null,
         font: 'Arial'
     };
@@ -42,18 +42,10 @@ module.exports = function(words, options) {
         // Default options value
         options = Object.assign({}, defaults, options);
 
-        // Backward compatibility
-        if (options.center.x > 1) {
-            options.center.x = options.center.x / options.width;
-            options.center.y = options.center.y / options.height;
-        }
-
         // Create colorGenerator function from options
-        // Direct function
         if (typeof options.colors == 'function') {
             colorGenerator = options.colors;
         }
-        // Array of sizes
         else if (isArray(options.colors)) {
             var cl = options.colors.length;
             if (cl > 0) {
@@ -71,11 +63,9 @@ module.exports = function(words, options) {
         }
 
         // Create sizeGenerator function from options
-        // Direct function
         if (typeof options.fontSize == 'function') {
             sizeGenerator = options.fontSize;
         }
-        // Object with 'from' and 'to'
         else if (typeof options.fontSize === 'object') {
             sizeGenerator = function(width, height, weight) {
                 var max = width * options.fontSize.from,
@@ -83,7 +73,6 @@ module.exports = function(words, options) {
                 return Math.round(min + (max - min) * 1.0 / (options.steps - 1) * (weight - 1)) + 'px';
             };
         }
-        // Array of sizes
         else if (isArray(options.fontSize)) {
             var sl = options.fontSize.length;
             if (sl > 0) {
@@ -105,47 +94,26 @@ module.exports = function(words, options) {
         data.aspectRatio = options.width / options.height;
     }
 
-    // Initialize the drawing of the whole cloud
     function drawWordCloud() {
-        var i, l;
-
-        if (words.length === 0) {
-            return;
-        }
-
         // Make sure every weight is a number before sorting
-        for (i = 0, l = words.length; i < l; i++) {
-            words[i].weight = parseFloat(words[i].weight, 10);
-        }
+        words.forEach(word => word.weight = parseFloat(word.weight, 10))
 
         // Sort words from the word with the highest weight to the one with the lowest
-        words.sort(function(a, b) {
-            return b.weight - a.weight;
-        });
+        words.sort((a, b) => b.weight - a.weight);
 
-        // Kepp trace of bounds
+        // Keep track of bounds
         data.maxWeight = words[0].weight;
         data.minWeight = words[words.length - 1].weight;
 
-        // Generate colors
-        data.colors = [];
+        // Generate colors and font sizes
         if (colorGenerator) {
-            for (i = 0; i < options.steps; i++) {
+            for (var i = 0; i < options.steps; i++) {
                 data.colors.push(colorGenerator(i + 1));
-            }
-        }
-
-        // Generate font sizes
-        data.sizes = [];
-        if (sizeGenerator) {
-            for (i = 0; i < options.steps; i++) {
                 data.sizes.push(sizeGenerator(options.width, options.height, i + 1));
             }
         }
 
-        for (i = 0, l = words.length; i < l; i++) {
-            drawOneWord(i, words[i]);
-        }
+        words.forEach((word, index) => drawOneWord(index, word))
     }
 
     // Function to draw a word, by moving it in spiral until it finds a suitable empty place
@@ -163,18 +131,15 @@ module.exports = function(words, options) {
             outputWord = {},
             dimensions;
 
-        // Linearly map the original weight to a discrete scale from 1 to 10
-        // Only if weights are different
+        // Linearly map the original weight to a discrete scale from 1 to 10, only if weights are different
         if (data.maxWeight != data.minWeight) {
             weight = Math.round((word.weight - data.minWeight) * 1.0 * (options.steps - 1) / (data.maxWeight - data.minWeight)) + 1;
         }
 
-        // Apply color
         if (data.colors.length) {
             outputWord.color = data.colors[weight - 1];
         }
 
-        // Apply size
         if (data.sizes.length) {
             outputWord.size = data.sizes[weight - 1];
         }
@@ -189,7 +154,6 @@ module.exports = function(words, options) {
         outputWord.height = dimensions.height;
         outputWord.left = options.center.x * options.width - dimensions.width / 2.0;
         outputWord.top = options.center.y * options.height - dimensions.height / 2.0;
-
 
         while (hitTest(outputWord)) {
             // option shape is 'rectangular' so move the word in a rectangular spiral
@@ -233,15 +197,13 @@ module.exports = function(words, options) {
         data.outputWords.push(outputWord);
     }
 
-    // Pairwise overlap detection
     function overlapping(a, b) {
         return (Math.abs(2.0 * a.left + a.width - 2.0 * b.left - b.width) < a.width + b.width) ||
             (Math.abs(2.0 * a.top + a.height - 2.0 * b.top - b.height) < a.height + b.height);
     }
 
-    // Helper function to test if an element overlaps others
-    function hitTest(elem) {
-        return data.outputWords.some(word => overlapping(elem, word))
+    function hitTest(newWord) {
+        return data.outputWords.some(word => overlapping(newWord, word))
     }
 
     function outsideContainer(word) {
