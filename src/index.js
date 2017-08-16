@@ -41,18 +41,16 @@ module.exports = function(words, options) {
     data.maxWeight = words[0].weight
     data.minWeight = words[words.length - 1].weight
 
-    // Generate colors and font sizes
     for (var i = 1; i <= options.steps; i++) {
         data.colors.push(colorGenerator(i))
         data.sizes.push(sizeGenerator(options.width, options.height, i))
     }
 
-    words.forEach((word, index) => drawOneWord(index, word))
+    words.forEach((word, index) => layoutWord(index, word))
 
     return data.outputWords
     
-    // Function to draw a word, by moving it in spiral until it finds a suitable empty place
-    function drawOneWord(index, word) {
+    function layoutWord(index, word) {
         // option.shape == 'elliptic'
         let angle = data.angle
         let radius = 0.0
