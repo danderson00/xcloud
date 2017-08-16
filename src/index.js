@@ -20,29 +20,18 @@ module.exports = function(words, options) {
         font: 'Arial'
     }, options)
     
+    words.forEach(word => word.weight = parseFloat(word.weight, 10))
+    words.sort((a, b) => b.weight - a.weight)
+
     let data = {
         outputWords: [],
         step: (options.shape === 'rectangular') ? 18.0 : 2.0,
         angle: Math.random() * 6.28,
         aspectRatio: options.width / options.height,
-        maxWeight: null,
-        minWeight: null,
-        sizes: [],
-        colors: []
-    }
-
-    let sizeGenerator = fontSizes.createGenerator(options.fontSize, options.steps)
-    let colorGenerator = colors.createGenerator(options.colors, options.steps)
-
-    words.forEach(word => word.weight = parseFloat(word.weight, 10))
-    words.sort((a, b) => b.weight - a.weight)
-
-    data.maxWeight = words[0].weight
-    data.minWeight = words[words.length - 1].weight
-
-    for (var i = 1; i <= options.steps; i++) {
-        data.colors.push(colorGenerator(i))
-        data.sizes.push(sizeGenerator(options.width, options.height, i))
+        maxWeight: words[0].weight,
+        minWeight: words[words.length - 1].weight,
+        sizes: fontSizes.generate(options.fontSize, options.steps, options.width, options.height),
+        colors: colors.generate(options.colors, options.steps)
     }
 
     words.forEach((word, index) => layoutWord(index, word))
@@ -96,7 +85,7 @@ module.exports = function(words, options) {
                         outputWord.top += data.step + Math.random() * 2.0
                         break
                 }
-            } else {
+            } else if (options.shape === 'elliptic') {
                 radius += data.step
                 angle += (index % 2 === 0 ? 1 : -1) * data.step
 

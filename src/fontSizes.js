@@ -1,4 +1,14 @@
 module.exports = {
+  generate: function (option, steps, width, height) {
+    const generator = module.exports.createGenerator(option, steps)
+    let result = []
+
+    for (var i = 1; i <= steps; i++) {
+      result.push(generator(width, height, i))
+    }
+
+    return result
+  },
   createGenerator: function (option, steps) {
     if (typeof option == 'function') {
       return option;
