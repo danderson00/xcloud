@@ -12,7 +12,6 @@ module.exports = function(words, options) {
     options = Object.assign({
         width: 640,
         height: 480,
-        center: { x: 0.5, y: 0.5 },
         steps: 10,
         shape: 'elliptic',
         removeOverflowing: true,
@@ -56,8 +55,8 @@ module.exports = function(words, options) {
         let radius = 0.0
 
         // option.shape == 'rectangular'
-        let steps_in_direction = 0.0
-        let quarter_turns = 0.0
+        let stepsInDirection = 0.0
+        let quarterTurns = 0.0
 
         const weight = fontSizes.mapWeightToScale(word.weight, data.minWeight, data.maxWeight, options.steps)
         const dimensions = options.measureText(word.text, options.font, data.sizes[weight - 1])
@@ -70,20 +69,20 @@ module.exports = function(words, options) {
             font: options.font,
             width: dimensions.width,
             height: dimensions.height,
-            left: options.center.x * options.width - dimensions.width / 2.0,
-            top: options.center.y * options.height - dimensions.height / 2.0
+            left: options.width / 2.0 - dimensions.width / 2.0,
+            top: options.height / 2.0 - dimensions.height / 2.0
         }
 
         while (bounds.hitTest(outputWord, data.outputWords)) {
             if (options.shape === 'rectangular') {
-                steps_in_direction++
+                stepsInDirection++
 
-                if (steps_in_direction * data.step > (1 + Math.floor(quarter_turns / 2.0)) * data.step * ((quarter_turns % 4 % 2) === 0 ? 1 : data.aspectRatio)) {
-                    steps_in_direction = 0.0
-                    quarter_turns++
+                if (stepsInDirection * data.step > (1 + Math.floor(quarterTurns / 2.0)) * data.step * ((quarterTurns % 4 % 2) === 0 ? 1 : data.aspectRatio)) {
+                    stepsInDirection = 0.0
+                    quarterTurns++
                 }
 
-                switch (quarter_turns % 4) {
+                switch (quarterTurns % 4) {
                     case 1:
                         outputWord.left += data.step * data.aspectRatio + Math.random() * 2.0
                         break
@@ -101,8 +100,8 @@ module.exports = function(words, options) {
                 radius += data.step
                 angle += (index % 2 === 0 ? 1 : -1) * data.step
 
-                outputWord.left = options.center.x * options.width - (outputWord.width / 2.0) + (radius * Math.cos(angle)) * data.aspectRatio
-                outputWord.top = options.center.y * options.height + radius * Math.sin(angle) - (outputWord.height / 2.0)
+                outputWord.left = (options.width / 2.0) - (outputWord.width / 2.0) + (radius * Math.cos(angle)) * data.aspectRatio
+                outputWord.top = (options.height / 2.0) + radius * Math.sin(angle) - (outputWord.height / 2.0)
             }
         }
 
