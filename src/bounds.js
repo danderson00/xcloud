@@ -4,14 +4,6 @@ var bounds = module.exports = {
       a.left > b.left + b.width || 
       b.top > a.top + a.height || 
       a.top > b.top + b.height)
-    // return between(a.left, b.left, b.width)
-    //   || between(b.left, a.left, a.width)
-    //   || between(a.top, b.top, b.height)
-    //   || between(b.top, a.top, a.height)
-
-    // function between(value, min, increase) {
-    //   return value > min && value < min + increase
-    // }
   },
 
   hitTest: function (newWord, existingWords) {
