@@ -15,12 +15,6 @@ const defaultOptions = {
 }
 
 module.exports = function(words, options) {
-  if(!options.measureText || options.measureText.constructor !== Function)
-    throw new Error('You must provide a measureText option!')
-
-  if(!words || words.length === 0)
-    return []
-
   options = Object.assign(defaultOptions, options)
   
   words.forEach(word => word.weight = parseFloat(word.weight, 10))
