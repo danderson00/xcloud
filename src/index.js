@@ -26,11 +26,11 @@ module.exports = function(words, options) {
   words.forEach(word => word.weight = parseFloat(word.weight, 10))
   words.sort((a, b) => b.weight - a.weight)
 
-  let outputWords = []
-  let maxWeight = words[0].weight
-  let minWeight = words[words.length - 1].weight
-  let sizes = fontSizes.generate(options.fontSize, options.steps, options.width, options.height)
-  let colors = colorGenerator.generate(options.colors, options.steps)
+  const outputWords = []
+  const maxWeight = words[0].weight
+  const minWeight = words[words.length - 1].weight
+  const sizes = fontSizes.generate(options.fontSize, options.steps, options.width, options.height)
+  const colors = colorGenerator.generate(options.colors, options.steps)
 
   words.forEach((word, index) => layoutWord(index, word))
 
@@ -40,7 +40,7 @@ module.exports = function(words, options) {
     const weight = fontSizes.mapWeightToScale(word.weight, minWeight, maxWeight, options.steps)
     const dimensions = options.measureText(word.text, options.font, sizes[weight - 1])
     
-    let outputWord = layout.next(index, options, outputWords, {
+    const outputWord = layout.next(index, options, outputWords, {
       color: colors[weight - 1],
       size: sizes[weight - 1],
       weight: weight,
