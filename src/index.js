@@ -3,6 +3,17 @@ const colorGenerator = require('./colorGenerator')
 const bounds = require('./bounds')
 const layout = require('./layout')
 
+const defaultOptions = {
+    width: 640,
+    height: 480,
+    steps: 10,
+    shape: 'elliptic',
+    removeOverflowing: true,
+    colors: { r: 34, g: 85, b: 153 },
+    fontSize: { from: 0.02, to: 0.07 },
+    font: 'Arial'
+}
+
 module.exports = function(words, options) {
     if(!options.measureText || options.measureText.constructor !== Function)
         throw new Error('You must provide a measureText option!')
@@ -10,16 +21,7 @@ module.exports = function(words, options) {
     if(!words || words.length === 0)
         return []
 
-    options = Object.assign({
-        width: 640,
-        height: 480,
-        steps: 10,
-        shape: 'elliptic',
-        removeOverflowing: true,
-        colors: { r: 34, g: 85, b: 153 },
-        fontSize: { from: 0.02, to: 0.07 },
-        font: 'Arial'
-    }, options)
+    options = Object.assign(defaultOptions, options)
     
     words.forEach(word => word.weight = parseFloat(word.weight, 10))
     words.sort((a, b) => b.weight - a.weight)
