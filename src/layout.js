@@ -4,7 +4,7 @@ const layout = module.exports = {
   next: function (index, options, outputWords, outputWord) {
     return layout[options.shape](index, outputWord, outputWords, options.width, options.height)
   },
-  
+
   elliptic: function (index, outputWord, outputWords, width, height) {
     let currentAngle = Math.random() * 6.28
     let radius = 0.0

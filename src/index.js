@@ -15,7 +15,7 @@ const defaultOptions = {
 }
 
 module.exports = function(words, options) {
-  options = Object.assign(defaultOptions, options)
+  options = Object.assign({}, defaultOptions, options)
   
   words.forEach(word => word.weight = parseFloat(word.weight, 10))
   words.sort((a, b) => b.weight - a.weight)
@@ -25,6 +25,10 @@ module.exports = function(words, options) {
   const minWeight = words[words.length - 1].weight
   const sizes = fontSizes.generate(options.fontSize, options.steps, options.width, options.height)
   const colors = colorGenerator.generate(options.colors, options.steps)
+  
+  const previousWords = options.previous 
+    ? options.previous.reduce((words, word) => words[word.text] = word, {})
+    : {}
 
   words.forEach((word, index) => layoutWord(index, word))
 
