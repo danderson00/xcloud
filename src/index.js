@@ -6,6 +6,7 @@ const layout = require('./layout')
 const defaultOptions = {
   width: 640,
   height: 480,
+  padding: 0,
   steps: 10,
   shape: 'elliptic',
   removeOverflowing: true,

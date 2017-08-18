@@ -2,16 +2,16 @@ const bounds = require('./bounds')
 
 const layout = module.exports = {
   next: function (index, options, outputWords, outputWord) {
-    return layout[options.shape](index, outputWord, outputWords, options.width, options.height)
+    return layout[options.shape](index, outputWord, outputWords, options.width, options.height, options.padding)
   },
 
-  elliptic: function (index, outputWord, outputWords, width, height) {
+  elliptic: function (index, outputWord, outputWords, width, height, padding) {
     let currentAngle = Math.random() * 6.28
     let radius = 0.0
     let step = 2.0
     let aspectRatio = width / height
     
-    while (bounds.hitTest(outputWord, outputWords)) {
+    while (bounds.hitTest(outputWord, outputWords, padding)) {
       radius += step
       currentAngle += (index % 2 === 0 ? 1 : -1) * step
 
@@ -22,13 +22,13 @@ const layout = module.exports = {
     return outputWord
   },
 
-  rectangular: function (index, outputWord, outputWords, width, height) {
+  rectangular: function (index, outputWord, outputWords, width, height, padding) {
     let stepsInDirection = 0.0
     let quarterTurns = 0.0
     let step = 18.0
     let aspectRatio = width / height
     
-    while (bounds.hitTest(outputWord, outputWords)) {
+    while (bounds.hitTest(outputWord, outputWords, padding)) {
       stepsInDirection++
       
       if (stepsInDirection * step > (1 + Math.floor(quarterTurns / 2.0)) * step * ((quarterTurns % 4 % 2) === 0 ? 1 : aspectRatio)) {

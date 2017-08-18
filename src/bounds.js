@@ -1,13 +1,14 @@
 var bounds = module.exports = {
-  overlapping: function (a, b) {
-    return !(b.left > a.left + a.width 
-      || a.left > b.left + b.width
-      || b.top > a.top + a.height
-      || a.top > b.top + b.height)
+  overlapping: function (a, b, padding) {
+    padding = padding || 0
+    return !(b.left - padding > a.left + a.width + padding
+      || a.left - padding > b.left + b.width + padding
+      || b.top - padding > a.top + a.height + padding
+      || a.top - padding > b.top + b.height + padding)
   },
 
-  hitTest: function (newWord, existingWords) {
-    return existingWords.some(word => bounds.overlapping(newWord, word))
+  hitTest: function (newWord, existingWords, padding) {
+    return existingWords.some(word => bounds.overlapping(newWord, word, padding))
   },
 
   outsideContainer: function (word, width, height) {
