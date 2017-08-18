@@ -2,7 +2,7 @@
 
 First pass
 - Iterate from largest to smallest
-- If word was not previously rendered, delay to second pass
+- If word was not previously rendered, delay to third pass
 - If word was previously rendered, attempt to render in the same location
   - If unable to render, delay to second pass
 Second pass
@@ -15,4 +15,4 @@ Third pass
 
 - Add appropriate exceptions if required options are not correctly specified
   - font size generator (function or { from, to })
-  - color generator (function or { from: { r, g, b }, to: { r, g, b } })
+  - color generator (function or { r, g, b } or { from: { r, g, b }, to: { r, g, b } })

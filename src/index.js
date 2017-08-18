@@ -26,19 +26,57 @@ module.exports = function(words, options) {
   const sizes = fontSizes.generate(options.fontSize, options.steps, options.width, options.height)
   const colors = colorGenerator.generate(options.colors, options.steps)
   
-  const previousWords = options.previous 
-    ? options.previous.reduce((words, word) => words[word.text] = word, {})
-    : {}
-
-  words.forEach((word, index) => layoutWord(index, word))
+  if(options.previous)
+    layoutFromPrevious()
+  else
+    words.forEach((word, index) => layoutWord(index, word))
 
   return outputWords
   
+  function layoutFromPrevious() {
+    const previousWords = options.previous.reduce((words, word) => (words[word.text] = word, words), {})
+    const wordsForSecondPass = []
+    const wordsForThirdPass = []
+    
+    // first pass - lay out each word that was previously rendered in the same place, if possible
+    words.forEach(word => {
+      const previousWord = previousWords[word.text]
+      const weight = fontSizes.mapWeightToScale(word.weight, minWeight, maxWeight, options.steps)
+      const dimensions = options.measureText(word.text, options.font, sizes[weight - 1])
+  
+      if(previousWord) {
+        const outputWord = createOutputWord(word, weight, dimensions, previousWord.left, previousWord.top)
+        if(!bounds.hitTest(outputWord, outputWords)) {
+          outputWords.push(outputWord)
+        } else {
+          wordsForSecondPass.push(word)
+        }
+      } else {
+        wordsForThirdPass.push(word)
+      }
+    })
+
+    // second pass - lay out each word that couldn't be placed in first pass
+    wordsForSecondPass.forEach((word, index) => layoutWord(index, word))
+
+    // third pass - lay out remaining words with no previous word
+    wordsForThirdPass.forEach((word, index) => layoutWord(index, word))    
+  }
+
   function layoutWord(index, word) {
     const weight = fontSizes.mapWeightToScale(word.weight, minWeight, maxWeight, options.steps)
     const dimensions = options.measureText(word.text, options.font, sizes[weight - 1])
     
-    const outputWord = layout.next(index, options, outputWords, {
+    const outputWord = layout.next(index, options, outputWords, 
+      createOutputWord(word, weight, dimensions, (options.width - dimensions.width) / 2.0, (options.height - dimensions.height) / 2.0)
+    )
+
+    if (!(options.removeOverflowing && bounds.outsideContainer(outputWord, options.width, options.height)))
+      outputWords.push(outputWord)
+  }
+
+  function createOutputWord(word, weight, dimensions, left, top) {
+    return {
       color: colors[weight - 1],
       size: sizes[weight - 1],
       weight: weight,
@@ -46,11 +84,8 @@ module.exports = function(words, options) {
       font: options.font,
       width: dimensions.width,
       height: dimensions.height,
-      left: (options.width - dimensions.width) / 2.0,
-      top: (options.height - dimensions.height) / 2.0
-    })
-
-    if (!(options.removeOverflowing && bounds.outsideContainer(outputWord, options.width, options.height)))
-      outputWords.push(outputWord)
+      left: left,
+      top: top
+    }
   }
 }
