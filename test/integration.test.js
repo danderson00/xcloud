@@ -18,8 +18,8 @@ test("words are placed in their previous position if possible", () => {
     { text: 'test2', weight: 2 }
   ]
   const previous = [
-    { text: 'test1', left: 1, top: 1 },
-    { text: 'test2', left: 100, top: 100 }
+    { text: 'test1', left: 1, top: 1, width: 50, height: 10 },
+    { text: 'test2', left: 100, top: 100, width: 50, height: 10 }
   ]
 
   const result = cloud(words, { measureText, previous })
@@ -36,8 +36,8 @@ test("words are placed normally if unable to be placed in previous position", ()
     { text: 'test2', weight: 2 }
   ]
   const previous = [
-    { text: 'test1', left: 110, top: 110 },
-    { text: 'test2', left: 100, top: 100 }
+    { text: 'test1', left: 110, top: 110, width: 50, height: 10 },
+    { text: 'test2', left: 100, top: 100, width: 50, height: 10 }
   ]
 
   const result = cloud(words, { measureText, previous })
@@ -54,7 +54,7 @@ test("words without previous placement are placed normally", () => {
     { text: 'test2', weight: 2 }
   ]
   const previous = [
-    { text: 'test2', left: 100, top: 100 }
+    { text: 'test2', left: 100, top: 100, width: 50, height: 10 }
   ]
 
   const result = cloud(words, { measureText, previous })

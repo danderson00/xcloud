@@ -45,7 +45,10 @@ module.exports = function(words, options) {
       const dimensions = options.measureText(word.text, options.font, sizes[weight - 1])
   
       if(previousWord) {
-        const outputWord = createOutputWord(word, weight, dimensions, previousWord.left, previousWord.top)
+        const outputWord = createOutputWord(word, weight, dimensions, 
+          previousWord.left - (dimensions.width - previousWord.width) / 2.0, 
+          previousWord.top - (dimensions.height - previousWord.height) / 2.0)
+
         if(!bounds.hitTest(outputWord, outputWords)) {
           outputWords.push(outputWord)
         } else {
