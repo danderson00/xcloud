@@ -16,9 +16,9 @@ module.exports = {
     } else if (typeof option === 'object') {
       return function (weight) {
         return {
-          r: Math.round(option.r + ((256 - option.r) * (1 / steps) * (steps - weight))),
-          g: Math.round(option.g + ((256 - option.g) * (1 / steps) * (steps - weight))),
-          b: Math.round(option.b + ((256 - option.b) * (1 / steps) * (steps - weight)))
+          r: Math.round(option.from.r + ((option.to.r - option.from.r) * (1 / steps) * (steps - weight))),
+          g: Math.round(option.from.g + ((option.to.g - option.from.g) * (1 / steps) * (steps - weight))),
+          b: Math.round(option.from.b + ((option.to.b - option.from.b) * (1 / steps) * (steps - weight)))
         }
       }
     }

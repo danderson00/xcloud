@@ -1,3 +1,10 @@
+## Animation
+
+- If previous word could not be placed in first pass,
+  - attempt to place using center of previous position
+  - if unable, attempt to position using normal center
+  - should move words a roughly minimum distance in many cases
+  - animating elements as they move in this case should create a really neat effect
 
 ## Usability
 

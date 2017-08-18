@@ -10,7 +10,7 @@ const defaultOptions = {
   steps: 10,
   shape: 'elliptic',
   removeOverflowing: true,
-  colors: { r: 34, g: 85, b: 153 },
+  colors: { from: { r: 34, g: 85, b: 153 }, to: { r: 227, g: 236, b: 249 } },
   fontSize: { from: 0.02, to: 0.07 },
   font: 'Arial'
 }
