@@ -7,7 +7,7 @@ module.exports = {
       result.push(generator(i))
     }
 
-    return result
+    return result.reverse()
   },
   createGenerator: function(option, steps) {
     if (typeof option == 'function') {

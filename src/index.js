@@ -93,3 +93,5 @@ module.exports = function(words, options) {
     }
   }
 }
+
+module.exports.defaultOptions = defaultOptions
