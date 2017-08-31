@@ -15,8 +15,8 @@ var layout = module.exports = {
       radius += step
       currentAngle += (index % 2 === 0 ? 1 : -1) * step
 
-      outputWord.left = ((width - outputWord.width) / 2.0) + (radius * Math.cos(currentAngle)) * aspectRatio
-      outputWord.top = ((height - outputWord.height) / 2.0) + radius * Math.sin(currentAngle)
+      outputWord.left = Math.floor(((width - outputWord.width) / 2.0) + (radius * Math.cos(currentAngle)) * aspectRatio)
+      outputWord.top = Math.floor(((height - outputWord.height) / 2.0) + radius * Math.sin(currentAngle))
     }
     
     return outputWord
@@ -38,16 +38,16 @@ var layout = module.exports = {
 
       switch (quarterTurns % 4) {
         case 1:
-          outputWord.left += step * aspectRatio + Math.random() * 2.0
+          outputWord.left += Math.floor(step * aspectRatio + Math.random() * 2.0)
           break
         case 2:
-          outputWord.top -= step + Math.random() * 2.0
+          outputWord.top -= Math.floor(step + Math.random() * 2.0)
           break
         case 3:
-          outputWord.left -= step * aspectRatio + Math.random() * 2.0
+          outputWord.left -= Math.floor(step * aspectRatio + Math.random() * 2.0)
           break
         case 0:
-          outputWord.top += step + Math.random() * 2.0
+          outputWord.top += Math.floor(step + Math.random() * 2.0)
           break
       }
     }

@@ -50,8 +50,8 @@ module.exports = function(words, options) {
   
       if(previousWord) {
         var outputWord = createOutputWord(word, weight, dimensions, 
-          previousWord.left - (dimensions.width - previousWord.width) / 2.0, 
-          previousWord.top - (dimensions.height - previousWord.height) / 2.0)
+          Math.floor(previousWord.left - (dimensions.width - previousWord.width) / 2.0),
+          Math.floor(previousWord.top - (dimensions.height - previousWord.height) / 2.0))
 
         if(!bounds.hitTest(outputWord, outputWords)) {
           outputWords.push(outputWord)
