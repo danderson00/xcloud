@@ -1,15 +1,15 @@
-const bounds = require('./bounds')
+var bounds = require('./bounds')
 
-const layout = module.exports = {
+var layout = module.exports = {
   next: function (index, options, outputWords, outputWord) {
     return layout[options.shape](index, outputWord, outputWords, options.width, options.height, options.padding)
   },
 
   elliptic: function (index, outputWord, outputWords, width, height, padding) {
-    let currentAngle = Math.random() * 6.28
-    let radius = 0.0
-    let step = 2.0
-    let aspectRatio = width / height
+    var currentAngle = Math.random() * 6.28
+    var radius = 0.0
+    var step = 2.0
+    var aspectRatio = width / height
     
     while (bounds.hitTest(outputWord, outputWords, padding)) {
       radius += step
@@ -23,10 +23,10 @@ const layout = module.exports = {
   },
 
   rectangular: function (index, outputWord, outputWords, width, height, padding) {
-    let stepsInDirection = 0.0
-    let quarterTurns = 0.0
-    let step = 18.0
-    let aspectRatio = width / height
+    var stepsInDirection = 0.0
+    var quarterTurns = 0.0
+    var step = 18.0
+    var aspectRatio = width / height
     
     while (bounds.hitTest(outputWord, outputWords, padding)) {
       stepsInDirection++

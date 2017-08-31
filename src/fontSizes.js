@@ -1,7 +1,7 @@
 module.exports = {
   generate: function (option, steps, width, height) {
-    const generator = module.exports.createGenerator(option, steps)
-    let result = []
+    var generator = module.exports.createGenerator(option, steps)
+    var result = []
 
     for (var i = 1; i <= steps; i++) {
       result.push(generator(width, height, i))

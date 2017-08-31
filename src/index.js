@@ -1,9 +1,9 @@
-const fontSizes = require('./fontSizes')
-const colorGenerator = require('./colorGenerator')
-const bounds = require('./bounds')
-const layout = require('./layout')
+var fontSizes = require('./fontSizes')
+var colorGenerator = require('./colorGenerator')
+var bounds = require('./bounds')
+var layout = require('./layout')
 
-const defaultOptions = {
+var defaultOptions = {
   width: 640,
   height: 480,
   padding: 0,
@@ -21,11 +21,11 @@ module.exports = function(words, options) {
   words.forEach(function(word) { word.weight = parseFloat(word.weight, 10) })
   words.sort(function(a, b) { return b.weight - a.weight })
 
-  const outputWords = []
-  const maxWeight = words[0].weight
-  const minWeight = words[words.length - 1].weight
-  const sizes = fontSizes.generate(options.fontSize, options.steps, options.width, options.height)
-  const colors = colorGenerator.generate(options.colors, options.steps)
+  var outputWords = []
+  var maxWeight = words[0].weight
+  var minWeight = words[words.length - 1].weight
+  var sizes = fontSizes.generate(options.fontSize, options.steps, options.width, options.height)
+  var colors = colorGenerator.generate(options.colors, options.steps)
   
   if(options.previous)
     layoutFromPrevious()
@@ -35,21 +35,21 @@ module.exports = function(words, options) {
   return outputWords
   
   function layoutFromPrevious() {
-    const previousWords = options.previous.reduce(function(words, word) { 
+    var previousWords = options.previous.reduce(function(words, word) { 
       words[word.text] = word
       return words
     }, {})
-    const wordsForSecondPass = []
-    const wordsForThirdPass = []
+    var wordsForSecondPass = []
+    var wordsForThirdPass = []
     
     // first pass - lay out each word that was previously rendered in the same place, if possible
     words.forEach(function(word) {
-      const previousWord = previousWords[word.text]
-      const weight = fontSizes.mapWeightToScale(word.weight, minWeight, maxWeight, options.steps)
-      const dimensions = options.measureText(word.text, options.font, sizes[weight - 1])
+      var previousWord = previousWords[word.text]
+      var weight = fontSizes.mapWeightToScale(word.weight, minWeight, maxWeight, options.steps)
+      var dimensions = options.measureText(word.text, options.font, sizes[weight - 1])
   
       if(previousWord) {
-        const outputWord = createOutputWord(word, weight, dimensions, 
+        var outputWord = createOutputWord(word, weight, dimensions, 
           previousWord.left - (dimensions.width - previousWord.width) / 2.0, 
           previousWord.top - (dimensions.height - previousWord.height) / 2.0)
 
@@ -71,10 +71,10 @@ module.exports = function(words, options) {
   }
 
   function layoutWord(index, word) {
-    const weight = fontSizes.mapWeightToScale(word.weight, minWeight, maxWeight, options.steps)
-    const dimensions = options.measureText(word.text, options.font, sizes[weight - 1])
+    var weight = fontSizes.mapWeightToScale(word.weight, minWeight, maxWeight, options.steps)
+    var dimensions = options.measureText(word.text, options.font, sizes[weight - 1])
     
-    const outputWord = layout.next(index, options, outputWords, 
+    var outputWord = layout.next(index, options, outputWords, 
       createOutputWord(word, weight, dimensions, (options.width - dimensions.width) / 2.0, (options.height - dimensions.height) / 2.0)
     )
 
