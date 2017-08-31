@@ -1,6 +1,6 @@
 {
   "name": "xtagcloud",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "homepage": "https://github.com/danderson00/xtagcloud",
   "description": "Generate word clouds on any platform",
   "main": "./src/index",
