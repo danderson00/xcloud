@@ -18,8 +18,8 @@ const defaultOptions = {
 module.exports = function(words, options) {
   options = Object.assign({}, defaultOptions, options)
   
-  words.forEach(word => word.weight = parseFloat(word.weight, 10))
-  words.sort((a, b) => b.weight - a.weight)
+  words.forEach(function(word) { word.weight = parseFloat(word.weight, 10) })
+  words.sort(function(a, b) { return b.weight - a.weight })
 
   const outputWords = []
   const maxWeight = words[0].weight
@@ -30,17 +30,20 @@ module.exports = function(words, options) {
   if(options.previous)
     layoutFromPrevious()
   else
-    words.forEach((word, index) => layoutWord(index, word))
+    words.forEach(function(word, index) { layoutWord(index, word) })
 
   return outputWords
   
   function layoutFromPrevious() {
-    const previousWords = options.previous.reduce((words, word) => (words[word.text] = word, words), {})
+    const previousWords = options.previous.reduce(function(words, word) { 
+      words[word.text] = word
+      return words
+    }, {})
     const wordsForSecondPass = []
     const wordsForThirdPass = []
     
     // first pass - lay out each word that was previously rendered in the same place, if possible
-    words.forEach(word => {
+    words.forEach(function(word) {
       const previousWord = previousWords[word.text]
       const weight = fontSizes.mapWeightToScale(word.weight, minWeight, maxWeight, options.steps)
       const dimensions = options.measureText(word.text, options.font, sizes[weight - 1])
@@ -61,10 +64,10 @@ module.exports = function(words, options) {
     })
 
     // second pass - lay out each word that couldn't be placed in first pass
-    wordsForSecondPass.forEach((word, index) => layoutWord(index, word))
+    wordsForSecondPass.forEach(function(word, index) { layoutWord(index, word) })
 
     // third pass - lay out remaining words with no previous word
-    wordsForThirdPass.forEach((word, index) => layoutWord(index, word))    
+    wordsForThirdPass.forEach(function(word, index) { layoutWord(index, word) })
   }
 
   function layoutWord(index, word) {
