@@ -8,7 +8,7 @@ var bounds = module.exports = {
   },
 
   hitTest: function (newWord, existingWords, padding) {
-    return existingWords.some(word => bounds.overlapping(newWord, word, padding))
+    return existingWords.some(function(word) { return bounds.overlapping(newWord, word, padding) })
   },
 
   outsideContainer: function (word, width, height) {
